@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Sieve of Eratosthenes</title>
+        <link rel="stylesheet" href="./blaze.css">
+        <link rel="stylesheet" href="./index.css">
+    </head>
+    <body>
+        <div class="o-container o-container--medium">
+
+            <div id="sieve" class="clear"></div>
+
+            <script type="text/javascript">
+                var maxColor = parseInt("FFFFFF", 16)
+                var roundLength = 100000
+
+                function getColor(int, max) {
+                    // int is the number of the color to choose(1 indexed)
+                    // max is the number of colors to use
+
+                    var factor = ((int - 1) / (max - 1)) * (7 - 0.000000001)
+                    var sectionTotal = parseInt("FF", 16)
+                    var subFactor = Math.floor((factor % 1) * sectionTotal)
+
+                    var hexPositive = Number(subFactor).toString(16)
+                    hexPositive = hexPositive.length == 2 ? hexPositive : "0" + hexPositive
+                    var hexNegative = Number(256 - subFactor).toString(16)
+                    hexNegative = hexNegative.length == 2 ? hexNegative : "0" + hexNegative
+
+                    var hex
+                    if (factor <= 0) {
+                        hex = "#000000"
+                    } else if (factor < 1) {
+                        hex =  "#0000" + hexPositive
+                    } else if (factor < 2) {
+                        hex =  "#" + hexPositive + "00FF"
+                    } else if (factor < 3) {
+                        hex =  "#FF00" + hexNegative
+                    } else if (factor < 4) {
+                        hex =  "#FF" + hexPositive + "00"
+                    } else if (factor < 5) {
+                        hex =  "#" + hexNegative + "FF00"
+                    } else if (factor < 6) {
+                        hex =  "#00FF" + hexPositive
+                    } else {
+                        hex =  "#" + hexPositive + "FFFF"
+                    }
+                    return hex
+                }
+
+                function drawGrid(gridElement, composites, colorCount) {
+                    var sieveElement = document.getElementById(gridElement)
+                    var wrapper = document.createElement('div')
+                    for(var i = 1; i < composites.length; i++) {
+                        var number = document.createElement('div')
+                        number.innerText = i
+                        wrapper.appendChild(number)
+                        number.classList.add('sieveNumber')
+                        var currentColor = getColor(i, colorCount)
+                        number.style.background = currentColor
+                    }
+                    sieveElement.innerHTML = wrapper.outerHTML
+                }
+
+                function setUpSieve(highNumber, gridElement, optimized) {
+                    intervalLength = roundLength / highNumber
+                    var colorCount = highNumber
+                    var composites = []
+                    for (var i = 0; i <= highNumber; i++) {
+                        composites.push(0)
+                    }
+                    drawGrid(gridElement, composites, colorCount)
+                }
+
+                setUpSieve(100, 'sieve', false)
+            </script>
+        </div>
+    </body>
+</html>
