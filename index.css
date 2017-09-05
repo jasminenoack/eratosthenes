@@ -1,0 +1,30 @@
+body {
+    background: aliceblue;
+    font-family: sans-serif;
+}
+
+.sieveNumber {
+    float: left;
+    width: 10%;
+    text-align: right;
+}
+
+.composite {
+    opacity: 0.25;
+}
+
+.prime {
+    font-weight: bold;
+    color: white;
+}
+
+.clear:after {
+    clear: both;
+    content: '';
+    display: block;
+}
+
+#sieve-optimized-1000 .sieveNumber {
+    width: 5%;
+    font-size: 10px
+}
