@@ -37,6 +37,14 @@
 
             <div id="sieve-optimized-1000" class="clear"></div>
 
+            <p>
+                These are of course not the only optimization choices one relatively cool choice is to do what's called a segmented sieve. As you can see remembering all the numbers takes up a lot of space so instead you can do the problem in sections. For example all the primes under 100. Then to do 100-200 you remember the primes you found under 100 and start by running a sieve on 100 - 200 for those numbers. Then you find the new primes under 200. If you do this repeatedly you can go much higher without running out of memory.
+            </p>
+
+            <p>
+                Another way to raise effeciency is to only look at ever other multiple of primes that aren't 2 given the the opposite one will always be even which means that it is divisible by 2. There are many small things like this that can be found on intricacies of how the sieve behaves for various numbers. But optimizing for every one may make the program difficult to debug or understand.
+            </p>
+
             <script type="text/javascript">
                 var maxColor = parseInt("FFFFFF", 16)
                 var roundLength = 100000
