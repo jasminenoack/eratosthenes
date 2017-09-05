@@ -8,8 +8,42 @@
     </head>
     <body>
         <div class="o-container o-container--medium">
+            <h1>The Sieve of Eratosthenes</h1>
+            <p>
+                So the sieve of Eratosthenes is an algorithm to determine prime numbers up to a specific number. It does so by marking numbers as "composite". That means they have a factor which is a prime number.
+            </p>
+            <p>
+                So for example 5's factors are 1 and 5. Since it's only factors are 1 and itself it's prime. But the factors of 4 are 1, 2, and 4. So since a different prime number is a factor of 4 then 4 is a composite number.
+            </p>
+            <p>
+                The sieve works by creating a list of all of the numbers between 2 and the given number. For each prime number it marks all multiples of that number as composite. So for 2 it marks 4, 6, 8 etc as composite numbers. Then it finds the next number that is a "non-composite". So after 2 it will process 3 the same way, but then it will skip 4 as 4 is marked as not composite, and move on to 5.
+            </p>
+            <p>
+                Below is a sample of a sieve for the numbers 1 - 100.
+            </p>
 
             <div id="sieve" class="clear"></div>
+
+            <p>
+                This sieve also can include an optimization which allows us to finish faster. This optimization is to start looking for multiples above the square of the number. That is because any number below the number's square must be a multiple of that number and a smaller number. For example, the multiples of 7 are 7, 14, 21, 28, 35, 42, 49. 49 is 7 * 7.
+                So everything before that must have a prime factor lower than 7. This is because we know 7 multiplied by something must equal it, and it's less than 7 * 7. So we know all of those numbers must have already been found.
+            </p>
+
+            <p>Here is the optimized version of the first 100.</p>
+
+            <div id="sieve-optimized" class="clear"></div>
+
+            <p>And the optimized version of the first 1,000.</p>
+
+            <div id="sieve-optimized-1000" class="clear"></div>
+
+            <p>
+                These are of course not the only optimization choices one relatively cool choice is to do what's called a segmented sieve. As you can see remembering all the numbers takes up a lot of space so instead you can do the problem in sections. For example all the primes under 100. Then to do 100-200 you remember the primes you found under 100 and start by running a sieve on 100 - 200 for those numbers. Then you find the new primes under 200. If you do this repeatedly you can go much higher without running out of memory.
+            </p>
+
+            <p>
+                Another way to raise effeciency is to only look at ever other multiple of primes that aren't 2 given the the opposite one will always be even which means that it is divisible by 2. There are many small things like this that can be found on intricacies of how the sieve behaves for various numbers. But optimizing for every one may make the program difficult to debug or understand.
+            </p>
 
             <script type="text/javascript">
                 var maxColor = parseInt("FFFFFF", 16)
@@ -18,6 +52,8 @@
                 function getColor(int, max) {
                     // int is the number of the color to choose(1 indexed)
                     // max is the number of colors to use
+
+                    console.log(int, max)
 
                     var factor = ((int - 1) / (max - 1)) * (7 - 0.000000001)
                     var sectionTotal = parseInt("FF", 16)
@@ -57,10 +93,40 @@
                         number.innerText = i
                         wrapper.appendChild(number)
                         number.classList.add('sieveNumber')
-                        var currentColor = getColor(i, colorCount)
-                        number.style.background = currentColor
+                        if (composites[i] === i && i > 1) {
+                            number.classList.add('prime')
+                        } else {
+                            number.classList.add('composite')
+                        }
+                        var compositeBase = composites[i] - 1
+                        if (compositeBase >= 0) {
+                            // var colorDiff = Math.floor(maxColor / colorCount)
+                            var currentColor = getColor(compositeBase, colorCount)
+                            number.style.background = currentColor
+                        }
                     }
                     sieveElement.innerHTML = wrapper.outerHTML
+                }
+
+                function alterSpot(gridElement, composites, colorCount, i) {
+                    var sieveElement = document.getElementById(gridElement)
+                    var number = document.createElement('div')
+                    number.innerText = i
+                    number.classList.add('sieveNumber')
+                    if (composites[i] === i && i > 1) {
+                        number.classList.add('prime')
+                    } else {
+                        number.classList.add('composite')
+                    }
+                    var compositeBase = composites[i] - 1
+                    if (compositeBase >= 0) {
+                        // var colorDiff = Math.floor(maxColor / colorCount)
+                        var currentColor = getColor(compositeBase, colorCount)
+                        number.style.background = currentColor
+                    }
+                    var wrapper = sieveElement.children[0]
+                    var oldOne = wrapper.children[i - 1]
+                    wrapper.replaceChild(number, oldOne)
                 }
 
                 function setUpSieve(highNumber, gridElement, optimized) {
@@ -70,10 +136,34 @@
                     for (var i = 0; i <= highNumber; i++) {
                         composites.push(0)
                     }
+                    composites[0] = 1
+                    composites[1] = 1
                     drawGrid(gridElement, composites, colorCount)
+                    setTimeout(stepSieve.bind(this), intervalLength)
+
+                    function stepSieve(currentNumber, nextIndex) {
+                        if (!currentNumber || !nextIndex || nextIndex >= composites.length) {
+                            nextIndex = composites.indexOf(0)
+                            currentNumber = nextIndex
+                        }
+                        composites[nextIndex] = currentNumber
+                        alterSpot(gridElement, composites, colorCount, nextIndex)
+                        if (nextIndex === currentNumber && optimized) {
+                            nextIndex = currentNumber * currentNumber
+                        } else {
+                            nextIndex += currentNumber
+                        }
+                        if (composites.indexOf(0) !== -1) {
+                            setTimeout(stepSieve.bind(this, currentNumber, nextIndex), intervalLength)
+                        } else {
+                            // setTimeout(setUpSieve.bind(this, highNumber, gridElement), intervalLength * 50)
+                        }
+                    }
                 }
 
                 setUpSieve(100, 'sieve', false)
+                setUpSieve(100, 'sieve-optimized', true)
+                setUpSieve(1000, 'sieve-optimized-1000', true)
             </script>
         </div>
     </body>
